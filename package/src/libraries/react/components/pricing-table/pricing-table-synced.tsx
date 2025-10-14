@@ -1,15 +1,15 @@
 import React from "react";
 
-import { useCustomer, usePricingTable, ProductDetails } from "@/index";
-import { createContext, useContext, useState } from "react";
-import { cn } from "@/lib/utils";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { ProductDetails, useCustomer, usePricingTable } from "@/index";
+import { cn } from "@/lib/utils";
+import { loadingStyles, spinnerStyles } from "@/utils/inject-styles";
+import type { Product, ProductItem } from "@sdk";
+import { Loader2 } from "lucide-react";
+import { createContext, useContext, useState } from "react";
 import CheckoutDialog from "../checkout-dialog/checkout-dialog-synced";
 import { getPricingTableContent } from "./lib/pricing-table-content";
-import type { Product, ProductItem } from "@sdk";
-import { loadingStyles, spinnerStyles } from "@/utils/inject-styles";
-import { Loader2 } from "lucide-react";
 
 export default function PricingTable({
   productDetails,
@@ -79,7 +79,8 @@ export default function PricingTable({
                 onClick: async () => {
                   if (product.id && customer) {
                     await checkout({
-                      productId: product.id,
+                      // @ts-ignore
+                      product_id: product.id,
                       dialog: CheckoutDialog,
                     });
                   } else if (product.display?.button_url) {
