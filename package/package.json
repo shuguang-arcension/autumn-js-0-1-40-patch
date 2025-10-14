@@ -2,7 +2,7 @@
   "name": "@sundawning/autumn-js-0-1-40-patch",
   "description": "Autumn JS Library",
   "version": "0.1.40",
-  "repository": "github:useautumn/autumn-js",
+  "repository": "github:shuguang-arcension/autumn-js-0-1-40-patch",
   "homepage": "https://docs.useautumn.com",
   "main": "./dist/sdk/index.js",
   "files": [
