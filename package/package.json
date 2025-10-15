@@ -1,5 +1,5 @@
 {
-  "name": "@sundawning/autumn-js-0-1-40-patch",
+  "name": "@sundawning/autumn-js-0-1-40-patch-2",
   "description": "Autumn JS Library",
   "version": "0.1.40",
   "repository": "github:shuguang-arcension/autumn-js-0-1-40-patch",
@@ -161,6 +161,7 @@
   "dependencies": {
     "query-string": "^9.2.2",
     "rou3": "^0.6.1",
+    "snakecase-keys": "^9.0.2",
     "swr": "^2.3.3",
     "zod": "^4.0.0"
   },

@@ -79,8 +79,7 @@ export default function PricingTable({
                 onClick: async () => {
                   if (product.id && customer) {
                     await checkout({
-                      // @ts-ignore
-                      product_id: product.id,
+                      productId: product.id,
                       dialog: CheckoutDialog,
                     });
                   } else if (product.display?.button_url) {

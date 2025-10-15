@@ -3,8 +3,6 @@ import {
   handleCancel,
   handleCheck,
   handleCheckout,
-  handleEntitled,
-  handleEvent,
   handleQuery,
   handleSetupPayment,
   handleTrack,
@@ -22,15 +20,16 @@ import {
 
 import { AttachParams, CheckoutParams } from "./general/attachTypes";
 
+import snakecaseKeys from "snakecase-keys";
 import { autumnApiUrl } from "../libraries/backend/constants";
+import { logger } from "../utils/logger";
 import { customerMethods } from "./customers/cusMethods";
 import { entityMethods } from "./customers/entities/entMethods";
+import { featureMethods } from "./features/featureMethods";
 import { productMethods } from "./products/prodMethods";
 import { referralMethods } from "./referrals/referralMethods";
 import { toContainerResult } from "./response";
 import { staticWrapper } from "./utils";
-import { logger } from "../utils/logger";
-import { featureMethods } from "./features/featureMethods";
 
 const LATEST_API_VERSION = "1.2";
 
@@ -85,7 +84,7 @@ export class Autumn {
       const response = await fetch(`${this.url}${path}`, {
         method: "POST",
         headers: this.headers,
-        body: JSON.stringify(body),
+        body: JSON.stringify(snakecaseKeys(body)),
       });
 
       return toContainerResult({ response, logger: this.logger });
@@ -115,18 +114,16 @@ export class Autumn {
   referrals = referralMethods(this);
   features = featureMethods(this);
 
-
-
   /**
    * Initiates a checkout flow for a product purchase.
-   * 
+   *
    * The checkout function handles the purchase process for products with pricing.
    * It determines whether to show a dialog for user input or redirect directly
    * to Stripe based on the customer's state and product requirements.
-   * 
+   *
    * @param params - Checkout parameters including product ID, customer data, and options
    * @returns Promise resolving to checkout details including pricing, prorations, and URLs
-   * 
+   *
    * @example
    * ```typescript
    * const result = await autumn.checkout({
@@ -134,7 +131,7 @@ export class Autumn {
    *   product_id: "pro",
    *   success_url: "https://myapp.com/success"
    * });
-   * 
+   *
    * if (result.url) {
    *   // Redirect to Stripe checkout
    *   window.location.href = result.url;
@@ -151,23 +148,21 @@ export class Autumn {
   static checkout = (params: CheckoutParams) =>
     staticWrapper(handleCheckout, undefined, { params });
 
-  
-
   static usage = (params: UsageParams) =>
     staticWrapper(handleUsage, undefined, { params });
 
   /**
    * Attaches a product to a customer, enabling access and handling billing.
-   * 
+   *
    * The attach function activates a product for a customer and applies all product items.
    * When you attach a product:
    * - The customer gains access to all features in the product
-   * - If the product has prices, the customer will be billed accordingly  
+   * - If the product has prices, the customer will be billed accordingly
    * - If there's no existing payment method, a checkout URL will be generated
-   * 
+   *
    * @param params - Attach parameters including customer ID, product ID, and options
    * @returns Promise resolving to attachment result with checkout URL if needed
-   * 
+   *
    * @example
    * ```typescript
    * const result = await autumn.attach({
@@ -175,7 +170,7 @@ export class Autumn {
    *   product_id: "pro",
    *   success_url: "https://myapp.com/success"
    * });
-   * 
+   *
    * if (result.checkout_url) {
    *   // Payment required - redirect to checkout
    *   window.location.href = result.checkout_url;
@@ -198,14 +193,14 @@ export class Autumn {
     staticWrapper(handleSetupPayment, undefined, { params });
   /**
    * Sets up a payment method for a customer.
-   * 
-   * This method allows you to set up payment methods for customers without 
+   *
+   * This method allows you to set up payment methods for customers without
    * immediately charging them. Useful for collecting payment information
    * before product attachment or for updating existing payment methods.
-   * 
+   *
    * @param params - Setup payment parameters including customer information
    * @returns Promise resolving to setup payment result
-   * 
+   *
    * @example
    * ```typescript
    * const result = await autumn.setupPayment({
@@ -225,13 +220,13 @@ export class Autumn {
 
   /**
    * Cancels a customer's subscription or product attachment.
-   * 
+   *
    * This method allows you to cancel a customer's subscription to a specific product.
    * You can choose to cancel immediately or at the end of the billing cycle.
-   * 
+   *
    * @param params - Cancel parameters including customer ID and product ID
    * @returns Promise resolving to cancellation result
-   * 
+   *
    * @example
    * ```typescript
    * const result = await autumn.cancel({
@@ -253,14 +248,14 @@ export class Autumn {
 
   /**
    * Checks if a customer has access to a specific feature.
-   * 
+   *
    * This method verifies whether a customer has permission to use a feature
    * and checks their remaining balance/usage limits. It can be used to gate
    * features and determine when to show upgrade prompts.
-   * 
+   *
    * @param params - Check parameters including customer ID and feature ID
    * @returns Promise resolving to access check result with allowed status and balance info
-   * 
+   *
    * @example
    * ```typescript
    * const result = await autumn.check({
@@ -268,7 +263,7 @@ export class Autumn {
    *   feature_id: "messages",
    *   required_balance: 1
    * });
-   * 
+   *
    * if (!result.allowed) {
    *   console.log("Feature access denied - upgrade required");
    * }
@@ -286,14 +281,14 @@ export class Autumn {
 
   /**
    * Tracks usage events for features or analytics.
-   * 
+   *
    * This method records usage events for metered features, updating the customer's
    * balance and usage statistics. It's typically used server-side to ensure
    * accurate tracking that cannot be manipulated by users.
-   * 
+   *
    * @param params - Track parameters including customer ID, feature ID, and usage value
    * @returns Promise resolving to tracking result
-   * 
+   *
    * @example
    * ```typescript
    * const result = await autumn.track({
@@ -312,19 +307,19 @@ export class Autumn {
 
   /**
    * Retrieves usage statistics and analytics for a customer.
-   * 
+   *
    * This method fetches detailed usage information for a customer's features,
    * including current balances, usage history, and analytics data. Useful
    * for displaying usage dashboards or generating reports.
-   * 
+   *
    * @param params - Usage parameters including customer ID and optional filters
    * @returns Promise resolving to usage statistics and analytics data
-   * 
+   *
    * @example
    * ```typescript
    * const result = await autumn.usage({
    *   customer_id: "user_123",
-   *   feature_id: "messages" 
+   *   feature_id: "messages"
    *   value: 20 // Usage value
    * });
    * ```
@@ -341,21 +336,21 @@ export class Autumn {
 
   /**
    * Performs advanced queries on customer data and analytics.
-   * 
+   *
    * This method allows you to run complex queries against customer data,
    * usage patterns, and billing information. Useful for generating reports,
    * analytics, and custom data insights.
-   * 
+   *
    * @param params - Query parameters including customer ID and query specifications
    * @returns Promise resolving to query results with requested data
-   * 
+   *
    * @example
    * ```typescript
    * const result = await autumn.query({
    *   customer_id: "user_123",
    *   feature_id: "messages" // feature id to fetch for query, can also be an array
    * });
-   * 
+   *
    * ```
    */
   async query(params: QueryParams) {
