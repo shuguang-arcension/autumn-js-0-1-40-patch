@@ -20,7 +20,6 @@ import {
 
 import { AttachParams, CheckoutParams } from "./general/attachTypes";
 
-import snakecaseKeys from "snakecase-keys";
 import { autumnApiUrl } from "../libraries/backend/constants";
 import { logger } from "../utils/logger";
 import { customerMethods } from "./customers/cusMethods";
@@ -84,7 +83,7 @@ export class Autumn {
       const response = await fetch(`${this.url}${path}`, {
         method: "POST",
         headers: this.headers,
-        body: JSON.stringify(snakecaseKeys(body)),
+        body: JSON.stringify(body),
       });
 
       return toContainerResult({ response, logger: this.logger });

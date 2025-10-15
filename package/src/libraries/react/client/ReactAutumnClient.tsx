@@ -8,7 +8,6 @@ import {
   toContainerResult,
 } from "../../../sdk";
 import { logFetchError } from "../errorUtils/logFetchError";
-import { getPricingTableMethod } from "./clientCompMethods";
 import { createCustomerMethod } from "./clientCusMethods";
 import {
   createEntityMethod,
@@ -16,6 +15,7 @@ import {
   getEntityMethod,
 } from "./clientEntityMethods";
 
+import snakecaseKeys from "snakecase-keys";
 import {
   attachMethod,
   cancelMethod,
@@ -304,7 +304,7 @@ export class AutumnClient implements IAutumnClient {
     return await this.handleFetch({
       path,
       method: "POST",
-      body,
+      body: snakecaseKeys(body),
     });
   }
 
